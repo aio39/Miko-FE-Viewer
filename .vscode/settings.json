@@ -37,6 +37,7 @@
     "gstatic",
     "jpop",
     "jsdelivr",
+    "JSIVS",
     "Kakao",
     "kalidokit",
     "Kpop",
@@ -55,6 +56,7 @@
     "Rebuffer",
     "REBUFFERING",
     "usehooks",
+    "videojs",
     "wasmworker",
     "webrtc",
     "YMDHM"

@@ -51,9 +51,9 @@ const nextConfig = {
     modularizeImports: {},
   },
   compiler: {
-    removeConsole: {
-      exclude: ['error', 'info'],
-    },
+    // removeConsole: {
+    //   exclude: ['error', 'info'],
+    // },
   },
   productionBrowserSourceMaps: true, // default false , true로하면 빌드시간이 매우 상승하지만 디버깅에 조워짐 + 권장사항 점수 상승
   swcMinify: true,

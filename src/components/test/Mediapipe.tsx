@@ -1,6 +1,8 @@
 import { Button } from '@chakra-ui/react';
 import * as cam from '@mediapipe/camera_utils';
 import { Pose, Results } from '@mediapipe/pose';
+import { sendMotionForFrames } from '@src/state/shareObject';
+import { MotionInterface } from '@src/types/avatar/ChatMotionType';
 import * as Kalidokit from 'kalidokit';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 
@@ -32,10 +34,10 @@ const MediaPipeSetup = memo(() => {
       // 적절하게 render 호출하는 메소드 setBone
       // setBone(modelListObject[myPeerId], myPeerId, poseRig, faceRig);
       // 15 20
-      //   if (sendMotionForFrames) {
-      //     const myMotion = { pose: poseRig, face: faceRig } as MotionInterface;
-      //     sendMotionForFrames.setMotionStatus(myMotion);
-      //   }
+      if (sendMotionForFrames) {
+        const myMotion = { pose: poseRig, face: faceRig } as MotionInterface;
+        sendMotionForFrames.setMotionStatus(myMotion);
+      }
     }
   }, []);
 

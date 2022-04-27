@@ -4,7 +4,7 @@ export const useIvsPlayer = () => {
   const [IVSPlayer, setIVSPlayer] = useState(window.IVSPlayer);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval: NodeJS.Timer = setInterval(() => {
       // 처음부터 있을 경우
       if (IVSPlayer) return clearInterval(interval);
       // 로딩 완료되면 set
@@ -15,7 +15,7 @@ export const useIvsPlayer = () => {
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [IVSPlayer]);
 
   return IVSPlayer;
 };

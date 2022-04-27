@@ -1,19 +1,21 @@
 // import { model } from '@src/state/recoil';
-import { Button } from '@chakra-ui/react';
-import { NEXT_URL } from '@src/const';
+import { Button, VStack } from '@chakra-ui/react';
 import { toastLog } from '@src/helper';
+import { currentAvatarState } from '@src/state/recoil';
 import { sendMotionForFrames } from '@src/state/shareObject/shareMotionObject';
 import 'babylonjs-loaders';
+import produce from 'immer';
 import { FC, useEffect, useRef } from 'react';
+import { useRecoilState } from 'recoil';
 
 const peerId = 'kirari';
-const path = `${NEXT_URL}/resources/babylonjs/models/`;
 const width = 500;
 const height = 500;
 
 export const AvatarModel: FC = () => {
   const tagId = 'avatar' + peerId;
   const workerRef = useRef<Worker>();
+  const [currentAvatar, setCurrentAvatar] = useRecoilState(currentAvatarState);
 
   useEffect(() => {
     const worker = new Worker(new URL('@src/worker/TmpAvatarModel.worker.ts', import.meta.url), { type: 'module' });
@@ -32,7 +34,7 @@ export const AvatarModel: FC = () => {
         aCanvas.className = 'used-canvas-one-more-time';
         const offCanvas = aCanvas.transferControlToOffscreen();
 
-        worker.postMessage({ type: 'init', canvas: offCanvas, path, width, height, newPeerId: peerId }, [offCanvas]);
+        worker.postMessage({ type: 'init', canvas: offCanvas, width, height, newPeerId: peerId }, [offCanvas]);
       }
     } else {
       toastLog('info', 'OffScreen Canvas 미지원 브라우저');
@@ -41,6 +43,7 @@ export const AvatarModel: FC = () => {
     const avatarSettingInterval = setInterval(() => {
       const newMotionData = sendMotionForFrames.getMotion;
       if (newMotionData) worker?.postMessage({ type: 'motionChange', thisUserMotion: newMotionData });
+      // if (workerRef.current) worker?.postMessage({ type: 'render' });
     }, 60);
 
     return () => {
@@ -49,16 +52,42 @@ export const AvatarModel: FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setCurrentAvatar(
+      produce(draft => {
+        /* eslint-disable */
+        const value = draft['test'];
+        delete draft['test'];
+        if (!value) return;
+        workerRef.current.postMessage({ type: 'avatarChange', avatarType: value });
+      }),
+    );
+  }, [currentAvatar]);
+
   return (
-    <>
+    <VStack>
       <canvas id={tagId} />;
       <Button
         onClick={() => {
-          workerRef.current.postMessage({ type: 'test' });
+          workerRef.current.postMessage({ type: 'check' });
         }}
       >
         test
       </Button>
-    </>
+      <Button
+        onClick={() => {
+          workerRef.current.postMessage({ type: 'textureChange' });
+        }}
+      >
+        model change
+      </Button>
+      <Button
+        onClick={() => {
+          console.log(currentAvatar);
+        }}
+      >
+        avatar number check
+      </Button>
+    </VStack>
   );
 };
