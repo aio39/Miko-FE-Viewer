@@ -55,3 +55,6 @@ export const URL_USER_TICKET = '/user_tickets';
 
 // Interval
 export const UPDATE_USERS_SCORE_TIME = 1000;
+
+// web-push key
+export const VapidServerKey = 'BNAgp0hyZG175VVckUdf-YGtg-dTmJjpaaunHi83G5LGWdwClOhbv6JMgsu9d-yAL2es-Y7V_YX060EUCXmsnoQ';

@@ -1,4 +1,5 @@
 import { Badge, Box, Button, Center, HStack, Image, Td, Text, Tr } from '@chakra-ui/react';
+import Noti from '@src/components/noti';
 import { IMAGE_DOMAIN } from '@src/const';
 import { convertDate } from '@src/helper';
 import { curUserTicketState } from '@src/state/recoil';
@@ -54,9 +55,12 @@ const ButtonStatus: FC<{ userTicket: UserTicket }> = ({ userTicket }) => {
         )
       )}
       {screeningBefore && (
-        <Text color="#3182CE" fontWeight="550" fontSize="16px">
-          上映前
-        </Text>
+        <Box>
+          <Text color="#3182CE" fontWeight="550" fontSize="16px">
+            上映前
+          </Text>
+          <Noti data={userTicket} />
+        </Box>
       )}
       {archiveAfter && (
         <Button size="sm" color="white" bg="#4A5568" disabled variant="solid" borderRadius={15} _hover={{ bg: '#4A5568' }}>
