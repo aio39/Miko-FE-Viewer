@@ -1,16 +1,15 @@
 import { Box, BoxProps, Heading, HStack, Spinner, Tag, VStack } from '@chakra-ui/react';
-import { useBeforeunload } from '@src/hooks';
-import { useMyPeer, useSocket } from '@src/hooks/dynamicHooks';
-import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, prepareAnimationDurationState, socketErrorState } from '@src/state/recoil';
+import { prepareAnimationDurationState } from '@src/state/recoil';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import LottieVideoPlay from '../../lottie/LottieVideoPlay';
 import ViewingCSRPage from '../ViewingCSRPage';
+import CleanUp from './CleanUp';
 import PrepareIVS from './PrepareIVS';
 import PrepareMediaPipeSetup from './PrepareMediaPipeSetup';
 import PrepareMediaStream from './PrepareMediaStream';
-import PreparePeerConnectToServer from './PreparePeerConncet';
+import PreparePeerConnectToServer from './PreparePeerConnectToServer';
 import PrepareSocketConnectToServer from './PrepareSocketConnectToServer';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
@@ -19,26 +18,17 @@ const MotionViewingCSRPage = motion(ViewingCSRPage);
 // Prepare 단계를 둠으로써 State 상태 관리
 const ViewingPrepareCSRPage = () => {
   const [isMediapipeSetup, setIsReadyMediapipeSetup] = useState(false);
-  const [mediapipeError, setMediapipeError] = useRecoilState(mediapipeErrorState);
   const [isReadySocket, setIsReadySocket] = useState(false);
-  const [socketError, setSocketError] = useRecoilState(socketErrorState);
   const [isReadyStream, setIsReadyStream] = useState(false);
-  const [myStream, setMyStream] = useRecoilState(myStreamState);
   const [isReadyPeer, setIsReadyPeer] = useState(false);
-  const [peerError, setPeerError] = useRecoilState(peerErrorState);
   const [isReadyIvs, setIsReadyIvs] = useState(!!window.IVSPlayer); // script 로드는 이미 로드된 상태면 fire되지 않음.
-  const [ivsError, setIvsError] = useRecoilState(ivsErrorState);
+
   const prepareAnimationDuration = useRecoilValue(prepareAnimationDurationState);
 
   const isExitedRef = useRef(false);
 
   const isAllReady = isReadyPeer && isReadySocket && isReadyStream && isReadyIvs && isMediapipeSetup;
   const [asyncIsAllReady, setAsyncIsAllReady] = useState<boolean>(isAllReady);
-
-  const resetMyStreamRecoil = useResetRecoilState(myStreamState);
-
-  const socket = useSocket();
-  const myPeer = useMyPeer();
 
   useEffect(() => {
     //  isAllReady의 상태가 방영된 상태로 Framer Motion이 exit 애니메이션을 실행하게 하기위해 AllReady가 2종류 임
@@ -48,48 +38,6 @@ const ViewingPrepareCSRPage = () => {
       }, 0);
     }
   }, [isAllReady]);
-
-  const handleCleanUp = () => {
-    console.log('handleCleanUp');
-    isExitedRef.current = true;
-
-    if (myStream) {
-      myStream.getTracks().forEach(track => {
-        track.stop();
-        myStream.removeTrack(track);
-      });
-      resetMyStreamRecoil();
-    }
-
-    if (socket) {
-      socket.emit('fe-user-left');
-      socket.disconnect();
-    }
-
-    if (myPeer) {
-      myPeer.disconnect();
-      myPeer.destroy();
-    }
-
-    window.socket = undefined;
-    window.myPeer = undefined;
-
-    setMediapipeError(undefined);
-    setSocketError(undefined);
-    setPeerError(undefined);
-    setIvsError(undefined);
-  };
-
-  useBeforeunload(() => {
-    handleCleanUp();
-    console.log('windowBeforeUnloadEvent in Prepare');
-  });
-
-  useEffect(() => {
-    return () => {
-      handleCleanUp();
-    };
-  }, []);
 
   //  TODO 종종 script 로딩 안됨
   return (
@@ -141,6 +89,7 @@ const ViewingPrepareCSRPage = () => {
           </MotionBox>
         )}
       </AnimatePresence>
+      <CleanUp isExitedRef={isExitedRef} />
     </>
   );
 };
