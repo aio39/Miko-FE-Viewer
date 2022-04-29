@@ -1,7 +1,7 @@
 import * as cam from '@mediapipe/camera_utils';
 import { NormalizedLandmark, Results } from '@mediapipe/pose';
 import { sendToAllPeers } from '@src/helper';
-import { isOnMediaPipeState, latestMotionState, myStreamState, peerDataListState } from '@src/state/recoil';
+import { isOnMediaPipeState, latestMotionState, mediapipeErrorState, myStreamState, peerDataListState } from '@src/state/recoil';
 import { addedScoreForSeconds, roomMemberMotions } from '@src/state/shareObject';
 import { sendMotionForFrames } from '@src/state/shareObject/shareMotionObject';
 import { aPose } from '@src/state/shareObject/sharePose';
@@ -9,11 +9,11 @@ import { useUser } from '@src/state/swr';
 import { MotionInterface } from '@src/types/avatar/ChatMotionType';
 import * as Kalidokit from 'kalidokit';
 import React, { Dispatch, memo, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
-import { SetterOrUpdater, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import PrepareErrorAlert from './PrepareErrorAlert';
 
 type Props = {
-  setIsMediaPipeSetup: Dispatch<SetStateAction<boolean>>;
-  setMediaPipeError: SetterOrUpdater<string | undefined>;
+  setReady: Dispatch<SetStateAction<boolean>>;
 };
 
 const VIDEO_WIDTH = 320;
@@ -21,8 +21,9 @@ const VIDEO_HEIGHT = 240;
 
 /* eslint-disable */
 
-const MediaPipeSetup = memo<Props>(({ setIsMediaPipeSetup, setMediaPipeError }) => {
+const PrepareMediaPipeSetup = memo<Props>(({ setReady }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [mediapipeError, setMediaPipeError] = useRecoilState(mediapipeErrorState);
   const myStream = useRecoilValue(myStreamState);
   const peers = useRecoilValue(peerDataListState);
   const isOnMediaPipe = useRecoilValue(isOnMediaPipeState);
@@ -103,7 +104,7 @@ const MediaPipeSetup = memo<Props>(({ setIsMediaPipeSetup, setMediaPipeError }) 
                 .initialize()
                 .then(() => {
                   isMediaPipeSetup = true;
-                  setIsMediaPipeSetup(true);
+                  setReady(true);
                 })
                 .catch(err => {
                   console.error(err);
@@ -144,7 +145,7 @@ const MediaPipeSetup = memo<Props>(({ setIsMediaPipeSetup, setMediaPipeError }) 
       if (isOnMediaPipe) {
         setupMediapipe();
       } else {
-        setIsMediaPipeSetup(true);
+        setReady(true);
       }
     }
 
@@ -159,6 +160,7 @@ const MediaPipeSetup = memo<Props>(({ setIsMediaPipeSetup, setMediaPipeError }) 
 
   return (
     <>
+      <PrepareErrorAlert errorText={mediapipeError} />
       <video
         ref={videoRef}
         style={{
@@ -172,6 +174,6 @@ const MediaPipeSetup = memo<Props>(({ setIsMediaPipeSetup, setMediaPipeError }) 
   );
 });
 
-MediaPipeSetup.displayName = 'MediaPipeSetup';
+PrepareMediaPipeSetup.displayName = 'MediaPipeSetup';
 
-export default MediaPipeSetup;
+export default PrepareMediaPipeSetup;
