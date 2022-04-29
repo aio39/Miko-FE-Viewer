@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { useMyPeer } from '@src/hooks/dynamicHooks';
 import { useUser } from '@src/state/swr';
 import { DataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
@@ -30,10 +30,15 @@ const ConnectToMyPeer: FC<{ myAccountPeerId: string }> = ({ myAccountPeerId }) =
     return () => {};
   }, []);
 
+  const sendDataTest = () => {
+    myDataConnection?.send({ type: 'test', data: 'aaaaa' });
+  };
+
   return (
     <Box>
       ConnectToMyPeer
       {myDataConnection ? 'connect' : 'no'}
+      <Button onClick={sendDataTest}>Click</Button>
     </Box>
   );
 };

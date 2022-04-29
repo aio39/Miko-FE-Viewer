@@ -22,6 +22,21 @@ interface DoneEvent {
   data: DoneInterface;
 }
 
-type DataConnectionEvent = ChatEvent | MotionEvent | UpdateScoreEvent | DoneEvent;
+export type DataConnectionEvent = ChatEvent | MotionEvent | UpdateScoreEvent | DoneEvent;
 
-export type { DataConnectionEvent };
+interface SyncChatEvent {
+  type: 'chat';
+  data: ChatMessageInterface;
+}
+
+interface SyncMotionEvent {
+  type: 'motion';
+  data: ChatMessageInterface;
+}
+
+interface SyncTestEvent {
+  type: 'test';
+  data: string;
+}
+
+export type SyncDataConnectionEvent = SyncChatEvent | SyncMotionEvent | SyncTestEvent;

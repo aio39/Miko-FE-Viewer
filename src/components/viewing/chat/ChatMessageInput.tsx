@@ -1,11 +1,12 @@
 import { Box, Button, Center, Input, ScaleFade } from '@chakra-ui/react';
 import { sendToAllPeers, showChatToRoom } from '@src/helper';
 import { useSocket } from '@src/hooks/dynamicHooks';
-import { chatModeState, isShowChatInputState, peerDataListState } from '@src/state/recoil';
+import { chatModeState, isShowChatInputState, mySyncDataConnectionState, peerDataListState } from '@src/state/recoil';
 import { addedScoreForSeconds } from '@src/state/shareObject/shareAddedScoreForSeconds';
 import { useUser } from '@src/state/swr';
 import { ChatMessageInterface } from '@src/types/dto/ChatMessageType';
-import { FormEvent, KeyboardEventHandler, memo, useRef, useState } from 'react';
+import { SyncDataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
+import { FormEvent, KeyboardEventHandler, memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { DoneOption } from './DoneOption';
 import { SuperChatOption } from './SuperChatOption';
@@ -19,50 +20,69 @@ const ChatMessageInput = memo(() => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [newMessage, setNewMessage] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
+  const [mySyncDataConnection, setMySyncDataConnection] = useRecoilState(mySyncDataConnectionState);
 
-  const chatModeCompute = () => {
+  const chatModeCompute = useCallback(() => {
     if (amount !== 0) return 'public';
     if (chatMode === 'public') return 'public';
     return 'private';
-  };
+  }, [amount, chatMode]);
 
-  const sendMessage = () => {
-    if (!newMessage) return;
-    addedScoreForSeconds.addScore(1, 'chat');
+  const sendMessage = useCallback(
+    (data: ChatMessageInterface) => {
+      addedScoreForSeconds.addScore(1, 'chat');
 
-    const data: ChatMessageInterface = {
-      sender: userData!.name,
-      text: newMessage,
-      amount,
-      timestamp: Date.now(),
-    };
+      sendToAllPeers(peers, { type: 'chat', data });
+      showChatToRoom(userData!.uuid, newMessage, 5);
 
-    sendToAllPeers(peers, { type: 'chat', data });
-    showChatToRoom(userData!.uuid, newMessage, 5);
+      if (chatModeCompute() === 'public') {
+        socket.emit('fe-send-message', data);
+      }
 
-    if (chatModeCompute() === 'public') {
-      socket.emit('fe-send-message', data);
-    }
+      setNewMessage('');
+      setAmount(0);
+      inputRef.current?.focus();
+    },
+    [peers, socket, newMessage, chatModeCompute, userData],
+  );
 
-    setNewMessage('');
-    setAmount(0);
-    inputRef.current?.focus();
-  };
+  const getData = (): ChatMessageInterface => ({
+    sender: userData!.name,
+    text: newMessage,
+    amount,
+    timestamp: Date.now(),
+  });
 
   const onSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    sendMessage();
+    if (!newMessage) return;
+
+    sendMessage(getData());
   };
 
   const onKeyDownHandler: KeyboardEventHandler<HTMLInputElement> = e => {
     e.stopPropagation();
+    if (!newMessage) return;
     if (e.key === 'Enter') {
-      sendMessage();
+      sendMessage(getData());
     }
     if (e.key === 'Esc' || e.key === 'Escape') {
       setIsShow(false);
     }
   };
+
+  useEffect(() => {
+    if (!mySyncDataConnection) return;
+    mySyncDataConnection.on('data', (event: SyncDataConnectionEvent) => {
+      if (event.type === 'chat') {
+        sendMessage(event.data);
+      }
+
+      if (event.type === 'test') {
+        console.info('aaaaa', event.data);
+      }
+    });
+  }, [mySyncDataConnection]);
 
   return (
     <Box bottom="2" position="fixed" zIndex={100}>
@@ -80,7 +100,6 @@ const ChatMessageInput = memo(() => {
           >
             {chatModeCompute() === 'public' ? '全体へ' : 'ルームへ'}
           </Button>
-          {/* <FormControl> */}
           <Input
             id="chat-input"
             autoComplete="off"
@@ -101,7 +120,6 @@ const ChatMessageInput = memo(() => {
           <Button type="submit" onClick={onSubmitHandler} colorScheme={amount === 0 ? 'cyan' : 'messenger'}>
             送る
           </Button>
-          {/* </FormControl> */}
         </Center>
       </ScaleFade>
     </Box>

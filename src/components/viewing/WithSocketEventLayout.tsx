@@ -2,7 +2,16 @@ import { showChatToRoom, toastLog, updateUserScore } from '@src/helper';
 import { setMotionToAvatar } from '@src/helper/dynamic/setMotionToAvatar';
 import { useBeforeunload } from '@src/hooks';
 import { useMyPeer, useSocket } from '@src/hooks/dynamicHooks';
-import { curUserTicketState, enterRoomIdAsyncState, latestScoreState, myStreamState, PeerDataInterface, peerDataListState, PickUserData } from '@src/state/recoil';
+import {
+  curUserTicketState,
+  enterRoomIdAsyncState,
+  latestScoreState,
+  myStreamState,
+  mySyncDataConnectionState,
+  PeerDataInterface,
+  peerDataListState,
+  PickUserData,
+} from '@src/state/recoil';
 import { useUser } from '@src/state/swr';
 import { DataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
 import produce from 'immer';
@@ -22,6 +31,7 @@ const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => 
   const myPeer = useMyPeer();
 
   const syncDataConnectionRef = useRef<DataConnection>();
+  const setMySyncDataConnection = useSetRecoilState(mySyncDataConnectionState);
 
   const { data: userData } = useUser();
   const myPeerUniqueID = userData?.uuid;
@@ -100,10 +110,6 @@ const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => 
       }
     });
 
-    const addEventToSyncDataConnection = (dataConnection: DataConnection) => {
-      dataConnection.on('data', (event: DataConnectionEvent) => {});
-    };
-
     const addEventToDataConnection = (dataConnection: DataConnection) => {
       const id = dataConnection.peer;
       dataConnection.on('data', (event: DataConnectionEvent) => {
@@ -151,8 +157,7 @@ const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => 
 
     const peerOnDataConnection = (dataConnection: DataConnection): void => {
       if (dataConnection.metadata?.type === 'sync') {
-        syncDataConnectionRef.current = dataConnection;
-        addEventToSyncDataConnection(dataConnection);
+        setMySyncDataConnection(dataConnection);
       } else {
         addDataConnectionToPeersDataList(dataConnection);
         addEventToDataConnection(dataConnection);
