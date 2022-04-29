@@ -2,19 +2,15 @@ import { Alert, AlertIcon, Box, BoxProps, Heading, HStack, Spinner, Tag, VStack 
 import { toastLog } from '@src/helper';
 import { useBeforeunload } from '@src/hooks';
 import { useMyPeer, useSocket } from '@src/hooks/dynamicHooks';
-import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, prepareAnimationDurationState, socketErrorState, streamErrorState } from '@src/state/recoil';
+import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, prepareAnimationDurationState, socketErrorState } from '@src/state/recoil';
 import { AnimatePresence, motion } from 'framer-motion';
 import Script from 'next/script';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
-import LottieVideoPlay from '../lottie/LottieVideoPlay';
-import ViewingCSRPage from './ViewingCSRPage';
-import MediaPipeSetup from './viewingPrepare/MediaPipeSetup';
-
-// NOTE video를 true로 할경우 여러 브라우저에서 카메로 리소스 접근할때 보안상의 이유로 에러가 나올 확률이 높음
-// getUserMedia의 callback이 실행되지 않아서 먼저 들어온 사람의 영상이 안 보일 수 있음.
-// Bind 해주지 않으면 this 에러남.
-const getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+import LottieVideoPlay from '../../lottie/LottieVideoPlay';
+import ViewingCSRPage from '../ViewingCSRPage';
+import MediaPipeSetup from '../viewingPrepare/MediaPipeSetup';
+import PrepareMediaStream from './PrepareMediaStream';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
 const MotionViewingCSRPage = motion(ViewingCSRPage);
@@ -27,7 +23,7 @@ const ViewingPrepareCSRPage = () => {
   const [isReadySocket, setIsReadySocket] = useState(false);
   const [socketError, setSocketError] = useRecoilState(socketErrorState);
   const [isReadyStream, setIsReadyStream] = useState(false);
-  const [streamError, setStreamError] = useRecoilState(streamErrorState);
+  const [myStream, setMyStream] = useRecoilState(myStreamState);
   const [isReadyPeer, setIsReadyPeer] = useState(false);
   const [peerError, setPeerError] = useRecoilState(peerErrorState);
   const [isReadyIvs, setIsReadyIvs] = useState(!!window.IVSPlayer); // script 로드는 이미 로드된 상태면 fire되지 않음.
@@ -39,7 +35,6 @@ const ViewingPrepareCSRPage = () => {
   const isAllReady = isReadyPeer && isReadySocket && isReadyStream && isReadyIvs && isMediapipeSetup;
   const [asyncIsAllReady, setAsyncIsAllReady] = useState<boolean>(isAllReady);
 
-  const [myStream, setMyStream] = useRecoilState(myStreamState);
   const resetMyStreamRecoil = useResetRecoilState(myStreamState);
 
   const socket = useSocket();
@@ -85,7 +80,6 @@ const ViewingPrepareCSRPage = () => {
 
     setMediapipeError(undefined);
     setSocketError(undefined);
-    setStreamError(undefined);
     setPeerError(undefined);
     setIvsError(undefined);
   };
@@ -99,45 +93,6 @@ const ViewingPrepareCSRPage = () => {
     return () => {
       handleCleanUp();
     };
-  }, []);
-
-  useLayoutEffect(() => {
-    const streamOptions: MediaStreamConstraints = { audio: true, video: { facingMode: 'user', frameRate: { ideal: 15 } } };
-
-    getUserMedia(streamOptions)
-      .then(stream => {
-        setMyStream(stream);
-        setIsReadyStream(true);
-      })
-      .catch((err: DOMException) => {
-        toastLog('error', 'get camera stream fail', '', err);
-        const { message, name } = err;
-        console.error('camera error', name, message);
-
-        switch (name) {
-          case 'AbortError':
-            setStreamError('このカメラは既に他のプログラムで使用されています。');
-            break;
-          case 'NotAllowedError':
-            setStreamError('カメラ使用が拒否されました。。');
-            break;
-          case 'NotFoundError':
-            setStreamError('条件に合うカメラが見つかりませんでした。');
-            break;
-          case 'NotReadableError':
-            setStreamError('カメラのストリームが読み取りできません。 NotReadableError');
-            break;
-          case 'OverconstrainedError':
-            setStreamError('カメラの設定が不適切です。 OverconstrainedError');
-            break;
-          case 'SecurityError':
-            setStreamError('User media support is disabled on the Document on which getUserMedia() was called.');
-            break;
-          default:
-            setStreamError('カメラの接続に失敗しました。');
-            break;
-        }
-      });
   }, []);
 
   useLayoutEffect(() => {
@@ -260,7 +215,7 @@ const ViewingPrepareCSRPage = () => {
                   <Tag colorScheme={isMediapipeSetup ? 'green' : 'red'}>motion</Tag>
                 </HStack>
                 <HStack>
-                  {[mediapipeError, socketError, streamError, peerError, ivsError].map(errorText => {
+                  {[mediapipeError, socketError, peerError, ivsError].map(errorText => {
                     if (errorText)
                       return (
                         <Alert status="error">
@@ -271,6 +226,7 @@ const ViewingPrepareCSRPage = () => {
 
                     return <></>;
                   })}
+                  <PrepareMediaStream setReady={setIsReadyStream} />
                 </HStack>
               </Box>
               <Script
