@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import { ReactElement, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
-const DynamicViewingPage = dynamic(() => import('@src/components/viewing/ViewingPrepareCSRPage'), {
+const DynamicViewingPage = dynamic(() => import('@src/components/viewing/prepare/ViewingPrepareCSRPage'), {
   loading: () => <div> loading</div>,
   ssr: false,
   suspense: true,
