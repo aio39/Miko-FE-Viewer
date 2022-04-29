@@ -4,12 +4,12 @@ import { useBeforeunload } from '@src/hooks';
 import { useMyPeer, useSocket } from '@src/hooks/dynamicHooks';
 import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, prepareAnimationDurationState, socketErrorState } from '@src/state/recoil';
 import { AnimatePresence, motion } from 'framer-motion';
-import Script from 'next/script';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import LottieVideoPlay from '../../lottie/LottieVideoPlay';
 import ViewingCSRPage from '../ViewingCSRPage';
 import MediaPipeSetup from '../viewingPrepare/MediaPipeSetup';
+import PrepareIVS from './PrepareIVS';
 import PrepareMediaStream from './PrepareMediaStream';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
@@ -215,7 +215,7 @@ const ViewingPrepareCSRPage = () => {
                   <Tag colorScheme={isMediapipeSetup ? 'green' : 'red'}>motion</Tag>
                 </HStack>
                 <HStack>
-                  {[mediapipeError, socketError, peerError, ivsError].map(errorText => {
+                  {[mediapipeError, socketError, peerError].map(errorText => {
                     if (errorText)
                       return (
                         <Alert status="error">
@@ -227,21 +227,9 @@ const ViewingPrepareCSRPage = () => {
                     return <></>;
                   })}
                   <PrepareMediaStream setReady={setIsReadyStream} />
+                  <PrepareIVS setReady={setIsReadyIvs} />
                 </HStack>
               </Box>
-              <Script
-                src="https://player.live-video.net/1.8.0/amazon-ivs-player.min.js"
-                // @ts-ignore
-                strategy="afterInteractive" // NOTE 왜 before하면 새로고침시 에러?, onLoad도 작동 안함?
-                onLoad={e => {
-                  console.log('ivs script loaded', e);
-                  setIsReadyIvs(true);
-                }}
-                onError={err => {
-                  toastLog('error', 'failed to load ivs script', '', err);
-                  setIvsError(err);
-                }}
-              />
             </VStack>
           </MotionBox>
         )}
