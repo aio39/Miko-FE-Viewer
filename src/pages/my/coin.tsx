@@ -1,4 +1,4 @@
-import { Box, Center, Divider, Flex, Heading, Spinner, VStack } from '@chakra-ui/react';
+import { Box, Center, Divider, Heading, Spinner, Text, VStack } from '@chakra-ui/react';
 import PaginationBtn from '@src/components/common/button/PaginationBtn';
 import AsyncBoundary from '@src/components/common/wrapper/AsyncBoundary';
 import CoinHeader from '@src/components/my/CoinHeader';
@@ -29,14 +29,17 @@ const CoinHistoryListView = () => {
 
   return (
     <>
-      {coinData.data?.map((coinInfo, index) => (
-        <Box key={index}>
-          <CoinHistory data={coinInfo} />
-        </Box>
-      ))}
-      <Center>
-        <PaginationBtn data={coinData.meta} options={{ shallow: true }} />
-      </Center>
+      <Box mb={16}>
+        {coinData.data?.map((coinInfo, index) => (
+          <CoinHistory key={index} data={coinInfo} />
+        ))}
+      </Box>
+      {coinData.data.length === 0 && (
+        <Center minH={'20vh'}>
+          <Text>チケットがありません。</Text>
+        </Center>
+      )}
+      <PaginationBtn data={coinData.meta} options={{ shallow: true }} />
     </>
   );
 };
@@ -47,30 +50,26 @@ export default function CoinPage() {
       <Head>
         <title key="title">User Coin | Miko</title>
       </Head>
-      <Flex justifyContent="center">
-        <Box w="100%" maxW="120vh">
-          <VStack>
-            <Heading fontWeight="700" size="2xl" my="20px">
-              私のコイン
-            </Heading>
-            <Box p={10} boxShadow="rgba(0, 0, 0, 0.1) 0px 4px 10px" w="100%">
-              <AsyncBoundary>
-                <CoinHeader />
-              </AsyncBoundary>
-              <Divider my={6} orientation="horizontal" />
-              <AsyncBoundary
-                pendingFallback={
-                  <Center>
-                    <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
-                  </Center>
-                }
-              >
-                <CoinHistoryListView />
-              </AsyncBoundary>
-            </Box>
-          </VStack>
+      <VStack w="full" px={20} spacing={10} minH="140vh">
+        <Heading fontWeight="700" size="2xl">
+          私のコイン
+        </Heading>
+        <Box p={10} boxShadow="rgba(0, 0, 0, 0.1) 0px 4px 10px" w="100%">
+          <AsyncBoundary>
+            <CoinHeader />
+          </AsyncBoundary>
+          <Divider my={6} orientation="horizontal" />
+          <AsyncBoundary
+            pendingFallback={
+              <Center>
+                <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
+              </Center>
+            }
+          >
+            <CoinHistoryListView />
+          </AsyncBoundary>
         </Box>
-      </Flex>
+      </VStack>
     </>
   );
 }
