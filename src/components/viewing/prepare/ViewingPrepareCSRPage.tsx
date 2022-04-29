@@ -11,13 +11,13 @@ import ViewingCSRPage from '../ViewingCSRPage';
 import PrepareIVS from './PrepareIVS';
 import PrepareMediaPipeSetup from './PrepareMediaPipeSetup';
 import PrepareMediaStream from './PrepareMediaStream';
+import PreparePeerConnect from './PreparePeerConncet';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
 const MotionViewingCSRPage = motion(ViewingCSRPage);
 
 // Prepare 단계를 둠으로써 State 상태 관리
 const ViewingPrepareCSRPage = () => {
-  const [fireRerender, setFireRerender] = useState(0);
   const [isMediapipeSetup, setIsReadyMediapipeSetup] = useState(false);
   const [mediapipeError, setMediapipeError] = useRecoilState(mediapipeErrorState);
   const [isReadySocket, setIsReadySocket] = useState(false);
@@ -39,10 +39,6 @@ const ViewingPrepareCSRPage = () => {
 
   const socket = useSocket();
   const myPeer = useMyPeer();
-
-  const handleFireRerender = () => {
-    setFireRerender(prev => prev + 1);
-  };
 
   useEffect(() => {
     //  isAllReady의 상태가 방영된 상태로 Framer Motion이 exit 애니메이션을 실행하게 하기위해 AllReady가 2종류 임
@@ -115,22 +111,6 @@ const ViewingPrepareCSRPage = () => {
       clearTimeout(timeoutId);
     };
   }, [socket]);
-
-  useLayoutEffect(() => {
-    //  on("open")에서 하면 useEffect에서 등록하기 전에 이미 open 되어버림.
-    let setTimeoutId: NodeJS.Timeout;
-    if (myPeer.open) {
-      setIsReadyPeer(true);
-    } else {
-      if (!myPeer.destroyed) {
-        myPeer.reconnect();
-      }
-      setTimeoutId = setTimeout(handleFireRerender, 200);
-    }
-    return () => {
-      clearTimeout(setTimeoutId);
-    };
-  }, [myPeer.open, fireRerender]);
 
   useLayoutEffect(() => {
     if (!myPeer) return;
@@ -228,6 +208,7 @@ const ViewingPrepareCSRPage = () => {
                   <PrepareMediaStream setReady={setIsReadyStream} />
                   <PrepareMediaPipeSetup setReady={setIsReadyMediapipeSetup} />
                   <PrepareIVS setReady={setIsReadyIvs} />
+                  <PreparePeerConnect setReady={setIsReadyPeer} />
                 </HStack>
               </Box>
             </VStack>
