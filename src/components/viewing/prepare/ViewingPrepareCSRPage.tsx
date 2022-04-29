@@ -8,8 +8,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import LottieVideoPlay from '../../lottie/LottieVideoPlay';
 import ViewingCSRPage from '../ViewingCSRPage';
-import MediaPipeSetup from '../viewingPrepare/MediaPipeSetup';
 import PrepareIVS from './PrepareIVS';
+import PrepareMediaPipeSetup from './PrepareMediaPipeSetup';
 import PrepareMediaStream from './PrepareMediaStream';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
@@ -18,7 +18,7 @@ const MotionViewingCSRPage = motion(ViewingCSRPage);
 // Prepare 단계를 둠으로써 State 상태 관리
 const ViewingPrepareCSRPage = () => {
   const [fireRerender, setFireRerender] = useState(0);
-  const [isMediapipeSetup, setIsMediapipeSetup] = useState(false);
+  const [isMediapipeSetup, setIsReadyMediapipeSetup] = useState(false);
   const [mediapipeError, setMediapipeError] = useRecoilState(mediapipeErrorState);
   const [isReadySocket, setIsReadySocket] = useState(false);
   const [socketError, setSocketError] = useRecoilState(socketErrorState);
@@ -223,10 +223,10 @@ const ViewingPrepareCSRPage = () => {
                           {errorText}
                         </Alert>
                       );
-
                     return <></>;
                   })}
                   <PrepareMediaStream setReady={setIsReadyStream} />
+                  <PrepareMediaPipeSetup setReady={setIsReadyMediapipeSetup} />
                   <PrepareIVS setReady={setIsReadyIvs} />
                 </HStack>
               </Box>
@@ -234,7 +234,6 @@ const ViewingPrepareCSRPage = () => {
           </MotionBox>
         )}
       </AnimatePresence>
-      <MediaPipeSetup setIsMediaPipeSetup={setIsMediapipeSetup} setMediaPipeError={setMediapipeError} />
     </>
   );
 };
