@@ -8,6 +8,8 @@ import { ChatMessageInterface } from '@src/types/dto/ChatMessageType';
 import { SyncDataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
 import { FormEvent, KeyboardEventHandler, memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import ChatModeBtn from './ChatModeBtn';
+import chatModeCompute from './computeChatMode';
 import { DoneOption } from './DoneOption';
 import { SuperChatOption } from './SuperChatOption';
 
@@ -15,18 +17,12 @@ const ChatMessageInput = memo(() => {
   const socket = useSocket();
   const { data: userData } = useUser();
   const [isShow, setIsShow] = useRecoilState(isShowChatInputState);
-  const [chatMode, setChatMode] = useRecoilState(chatModeState);
   const peers = useRecoilValue(peerDataListState);
   const inputRef = useRef<HTMLInputElement>(null);
   const [newMessage, setNewMessage] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
   const [mySyncDataConnection, setMySyncDataConnection] = useRecoilState(mySyncDataConnectionState);
-
-  const chatModeCompute = useCallback(() => {
-    if (amount !== 0) return 'public';
-    if (chatMode === 'public') return 'public';
-    return 'private';
-  }, [amount, chatMode]);
+  const chatMode = useRecoilValue(chatModeState);
 
   const sendMessage = useCallback(
     (data: ChatMessageInterface) => {
@@ -35,7 +31,7 @@ const ChatMessageInput = memo(() => {
       sendToAllPeers(peers, { type: 'chat', data });
       showChatToRoom(userData!.uuid, newMessage, 5);
 
-      if (chatModeCompute() === 'public') {
+      if (chatModeCompute(amount, chatMode) === 'public') {
         socket.emit('fe-send-message', data);
       }
 
@@ -43,7 +39,7 @@ const ChatMessageInput = memo(() => {
       setAmount(0);
       inputRef.current?.focus();
     },
-    [peers, socket, newMessage, chatModeCompute, userData],
+    [peers, socket, newMessage, chatModeCompute, userData, amount, chatMode],
   );
 
   const getData = (): ChatMessageInterface => ({
@@ -88,18 +84,7 @@ const ChatMessageInput = memo(() => {
     <Box bottom="2" position="fixed" zIndex={100}>
       <ScaleFade in={isShow}>
         <Center bgColor="white" p="2" backgroundColor="#000000AA" border="2px" borderRadius="xl" gap="10px" px="4" py="4">
-          <Button
-            colorScheme="facebook"
-            width="20"
-            onClick={() =>
-              setChatMode(prev => {
-                if (prev === 'private') return 'public';
-                return 'private';
-              })
-            }
-          >
-            {chatModeCompute() === 'public' ? '全体へ' : 'ルームへ'}
-          </Button>
+          <ChatModeBtn amount={amount} />
           <Input
             id="chat-input"
             autoComplete="off"
