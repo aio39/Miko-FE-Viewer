@@ -1,5 +1,5 @@
 import { SearchIcon } from '@chakra-ui/icons';
-import { Box, Button, Center, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, InputRightElement, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Button, Center, HStack, Icon, Input, InputGroup, InputLeftElement, InputRightElement, SimpleGrid, Text } from '@chakra-ui/react';
 import { FiFilter } from '@react-icons/all-files/fi/FiFilter';
 import PaginationBtn from '@src/components/common/button/PaginationBtn';
 import CategoryFilter from '@src/components/concert/CategoryFilter';
@@ -44,13 +44,13 @@ const SearchBox = () => {
     }
   };
   return (
-    <InputGroup size="md">
+    <InputGroup size="lg">
       <InputLeftElement>
         <SearchIcon pointerEvents="none" color="gray.300" />
       </InputLeftElement>
       <Input pr="4.5rem" type="text" placeholder="Enter title" value={searchQuery} onKeyUp={enterKey} required onChange={onChangeSearch} />
       <InputRightElement width="4.5rem" mr={2}>
-        <Button h="1.75rem" size="sm" onClick={onClickSearch} type="submit">
+        <Button h="1.75rem" onClick={onClickSearch} type="submit">
           Search
         </Button>
       </InputRightElement>
@@ -107,7 +107,7 @@ const ConcertListView: FC<{ query: CommonFSW; iniData: Pagination<Concert> }> = 
 
   return (
     <Box>
-      <SimpleGrid columns={[2, null, 4]} spacing="35px" pt={4} pb={20}>
+      <SimpleGrid columns={[2, null, 4]} spacing="30px" pt={4} pb={20}>
         <ConcertList data={pageConcert.data} />
       </SimpleGrid>
       <PaginationBtn data={pageConcert.meta} options={{ shallow: true }} />
@@ -118,7 +118,7 @@ const ConcertListView: FC<{ query: CommonFSW; iniData: Pagination<Concert> }> = 
 export default function ConcertPage({ iniData, initialParam }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
-  const [isShowCategoryFilter, setIsShowCategoryFilter] = useState(false);
+  const [isShowCategoryFilter, setIsShowCategoryFilter] = useState(true);
   const [categoryId, setCategoryId] = useState(initialParam.categoryId);
   const [page, setPage] = useState(initialParam.page);
   const [search, setSearch] = useState(initialParam.search);
@@ -151,18 +151,16 @@ export default function ConcertPage({ iniData, initialParam }: InferGetServerSid
       <Head>
         <title key="title">Miko - ConcertList</title>
       </Head>
-      <Flex justifyContent="center" p={3}>
-        <Box w="full" maxW={{ xl: '120vh' }}>
-          <SearchBox />
-          <HStack py={4}>
-            <Icon boxSize={5} onClick={handleShowCategoryFilter} cursor="pointer" as={FiFilter} />
-            <Box visibility={isShowCategoryFilter ? 'visible' : 'hidden'}>
-              <CategoryFilter />
-            </Box>
-          </HStack>
-          <ConcertListView iniData={iniData} query={query} />
-        </Box>
-      </Flex>
+      <Box w="full">
+        <SearchBox />
+        <HStack py={4}>
+          <Icon boxSize={5} onClick={handleShowCategoryFilter} cursor="pointer" as={FiFilter} />
+          <Box visibility={isShowCategoryFilter ? 'visible' : 'hidden'}>
+            <CategoryFilter />
+          </Box>
+        </HStack>
+        <ConcertListView iniData={iniData} query={query} />
+      </Box>
     </>
   );
 }

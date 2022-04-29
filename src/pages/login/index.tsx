@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Input, Link, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Center, FormControl, FormErrorMessage, FormLabel, Heading, Input, Link, Stack, Text } from '@chakra-ui/react';
 import { FcGoogle } from '@react-icons/all-files/fc/FcGoogle';
 import AsyncBoundary from '@src/components/common/wrapper/AsyncBoundary';
 import { LARAVEL_URL } from '@src/const';
@@ -55,88 +55,86 @@ export default function LoginPage() {
       <AsyncBoundary pendingFallback={<></>}>
         <RedirectLogic />
       </AsyncBoundary>
-      <Flex minH={'80vh'} align={'center'} justify={'center'}>
-        <Box rounded={'lg'} border="1px" borderColor="gray.200" borderRadius="15px" p={10} w={'full'} maxW={'md'}>
-          <Heading fontSize={'4xl'} my={6}>
-            Sign In
-          </Heading>
-          <Stack spacing={4}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={5}>
-                <FormControl id="email" isInvalid={!!errors.email}>
-                  <FormLabel>Email address</FormLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    {...register('email', {
-                      required: 'This is required',
-                      minLength: {
-                        value: 4,
-                        message: 'Minimum length should be 4',
-                      },
-                    })}
-                  />
-                  <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                </FormControl>
-                <FormControl id="password" isInvalid={!!errors.password}>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    id="password"
-                    {...register('password', {
-                      required: 'This is required',
-                      minLength: {
-                        value: 4,
-                        message: 'Minimum length should be 4',
-                      },
-                    })}
-                  />
-                  <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
-                </FormControl>
-                <Stack spacing={6}>
-                  <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'end'}>
-                    <NextLink href="./user/password">
-                      <Link color={'blue.400'}>Forgot password?</Link>
-                    </NextLink>
-                    <NextLink href="./login/sign">
-                      <Link color={'blue.400'}>会員登録</Link>
-                    </NextLink>
-                  </Stack>
-                  <Button
-                    bg={'blue.400'}
-                    color={'white'}
-                    _hover={{
-                      bg: 'blue.500',
-                    }}
-                    type="submit"
-                    isLoading={isSubmitting}
-                  >
-                    Sign in
-                  </Button>
-                  <Button
-                    w={'full'}
-                    variant={'outline'}
-                    _hover={{
-                      bg: 'blue.300',
-                      color: 'white',
-                    }}
-                    leftIcon={<FcGoogle />}
-                    type="submit"
-                    isLoading={isSubmitting}
-                    onClick={() => {
-                      router.push(`${LARAVEL_URL}/login/google`);
-                    }}
-                  >
-                    <Center>
-                      <Text>Sign in with Google</Text>
-                    </Center>
-                  </Button>
+      <Box my={20} rounded={'lg'} border="1px" borderColor="gray.200" borderRadius="15px" p={10} w={'full'} maxW={'md'}>
+        <Heading fontSize={'4xl'} my={6}>
+          Sign In
+        </Heading>
+        <Stack spacing={4}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={5}>
+              <FormControl id="email" isInvalid={!!errors.email}>
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  type="email"
+                  id="email"
+                  {...register('email', {
+                    required: 'This is required',
+                    minLength: {
+                      value: 4,
+                      message: 'Minimum length should be 4',
+                    },
+                  })}
+                />
+                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl id="password" isInvalid={!!errors.password}>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  id="password"
+                  {...register('password', {
+                    required: 'This is required',
+                    minLength: {
+                      value: 4,
+                      message: 'Minimum length should be 4',
+                    },
+                  })}
+                />
+                <FormErrorMessage>{errors.password && errors.password.message}</FormErrorMessage>
+              </FormControl>
+              <Stack spacing={6}>
+                <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'end'}>
+                  <NextLink href="./user/password">
+                    <Link color={'blue.400'}>Forgot password?</Link>
+                  </NextLink>
+                  <NextLink href="./login/sign">
+                    <Link color={'blue.400'}>会員登録</Link>
+                  </NextLink>
                 </Stack>
+                <Button
+                  bg={'blue.400'}
+                  color={'white'}
+                  _hover={{
+                    bg: 'blue.500',
+                  }}
+                  type="submit"
+                  isLoading={isSubmitting}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  w={'full'}
+                  variant={'outline'}
+                  _hover={{
+                    bg: 'blue.300',
+                    color: 'white',
+                  }}
+                  leftIcon={<FcGoogle />}
+                  type="submit"
+                  isLoading={isSubmitting}
+                  onClick={() => {
+                    router.push(`${LARAVEL_URL}/login/google`);
+                  }}
+                >
+                  <Center>
+                    <Text>Sign in with Google</Text>
+                  </Center>
+                </Button>
               </Stack>
-            </form>
-          </Stack>
-        </Box>
-      </Flex>
+            </Stack>
+          </form>
+        </Stack>
+      </Box>
     </>
   );
 }

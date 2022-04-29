@@ -1,4 +1,4 @@
-import { Box, Drawer, DrawerContent, useDisclosure } from '@chakra-ui/react';
+import { Box, Drawer, DrawerContent, Flex, useDisclosure } from '@chakra-ui/react';
 import Footer from '@src/components/home/Footer';
 import { FC, ReactElement } from 'react';
 import { SideBar } from './basicLayout/sideNav/Sidebar';
@@ -26,8 +26,10 @@ const Layout: FC<Props> = ({ children }) => {
         </DrawerContent>
       </Drawer>
       <TopNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} mt="10" p="4" flexGrow={1} paddingBottom="100px">
-        {children}
+      <Box ml={{ base: 0, md: 60 }} mt="5" p="14" flexGrow={1} paddingBottom="100px">
+        <Flex direction="column" alignItems="center">
+          {children}
+        </Flex>
       </Box>
       <Footer />
     </Box>

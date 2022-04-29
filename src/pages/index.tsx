@@ -1,4 +1,4 @@
-import { Box, Button, CSSObject, Flex, Heading, HStack, SimpleGrid, Spacer, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, CSSObject, Heading, HStack, SimpleGrid, Spacer, Text, VStack } from '@chakra-ui/react';
 import ConcertList from '@src/components/home/ConcertList';
 import MainRanking from '@src/components/home/MainRanking';
 import { getPageLaravelData } from '@src/helper/getDataFromLaravel';
@@ -31,7 +31,7 @@ const SortItems: Array<SortItemProps> = [
 
 const SortList: FC<{ data: Concert[]; sortData: SortItemProps }> = ({ data, sortData }) => {
   return (
-    <Box w="full" maxW="120vh">
+    <Box w="full">
       <HStack py={6} mt={3}>
         <Heading as="h2" size="2xl">
           {sortData.title}
@@ -46,7 +46,7 @@ const SortList: FC<{ data: Concert[]; sortData: SortItemProps }> = ({ data, sort
           </a>
         </Link>
       </HStack>
-      <SimpleGrid columns={[2, null, 4]} spacing="20px">
+      <SimpleGrid columns={[2, null, 4]} spacing="25px">
         <ConcertList data={data} />
       </SimpleGrid>
     </Box>
@@ -157,17 +157,13 @@ export default function HomePage({ newData, topData, jpopData, kpopData }: Infer
         <meta property="og:title" content="Miko" key="og:title" />
         <meta name="description" content="miko homepage, concert list" />
       </Head>
-      <Flex direction="column" alignItems="center">
-        <Box>
-          <LoginLeadBox />
-          {/* <TopList data={topData} /> */}
-          <VStack>
-            <SortList data={newData} sortData={SortItems[0]} />
-            <SortList data={jpopData} sortData={SortItems[1]} />
-            <SortList data={kpopData} sortData={SortItems[2]} />
-          </VStack>
-        </Box>
-      </Flex>
+      <LoginLeadBox />
+      {/* <TopList data={topData} /> */}
+      <VStack>
+        <SortList data={newData} sortData={SortItems[0]} />
+        <SortList data={jpopData} sortData={SortItems[1]} />
+        <SortList data={kpopData} sortData={SortItems[2]} />
+      </VStack>
     </>
   );
 }

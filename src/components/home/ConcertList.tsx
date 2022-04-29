@@ -44,10 +44,10 @@ const ConcertCard: FC<{ concert: Concert }> = ({ concert }) => {
           />
         </Box>
         <Box my={2}>
-          <Text color="gray.700" fontSize="sm">
+          <Text color="gray.700" fontSize="md">
             {concertStartDate}
           </Text>
-          <Text fontSize="xl" fontWeight="bold">
+          <Text fontSize="2xl" fontWeight="bold">
             {concert.title}
           </Text>
         </Box>
@@ -61,7 +61,7 @@ const ConcertList: FC<{ data: Concert[] }> = ({ data }) => {
   return (
     <>
       {concerts?.map((concert, index) => (
-        <Box key={index} maxW={300}>
+        <Box key={index} maxW={350}>
           <ConcertCard concert={concert} />
         </Box>
       ))}

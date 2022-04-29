@@ -9,35 +9,29 @@ const CoinHistory: FC<{ data: Coin }> = ({ data }) => {
   //   console.log(data);
   const historyDate = convertDate(data.createdAt, 'YMD');
   return (
-    <>
-      <Flex>
-        <Box p="2">
-          <HStack>
-            {data.type === (0 || 5 || 6 || 7 || 8) ? (
-              <Circle size="53px" fontWeight="510" bg="teal" color="white">
-                <Text>充電</Text>
-              </Circle>
-            ) : (
-              <Circle size="53px" fontWeight="510" bg="tomato" color="white">
-                <Text>使用</Text>
-              </Circle>
-            )}
-            <Box>
-              <Text fontSize="sm">{historyDate}</Text>
-              <Text>{data.type != (0 || 5 || 6 || 7 || 8) ? `コイン使用 (${history[data.type]})` : history[data.type]} </Text>
-            </Box>
-          </HStack>
-        </Box>
-        <Spacer />
-        <Box>
-          <HStack>
-            <Text fontSize="lg" fontWeight="500">
-              {data.type === (0 || 5 || 6 || 7 || 8) && '+'} {data.variation}C
-            </Text>
-          </HStack>
-        </Box>
-      </Flex>
-    </>
+    <Flex p="2">
+      <Box>
+        <HStack>
+          {data.type == (0 || 5 || 6 || 7 || 8) ? (
+            <Circle size="53px" fontWeight="510" bg="teal" color="white">
+              <Text>充電</Text>
+            </Circle>
+          ) : (
+            <Circle size="53px" fontWeight="510" bg="tomato" color="white">
+              <Text>使用</Text>
+            </Circle>
+          )}
+          <Box>
+            <Text fontSize="sm">{historyDate}</Text>
+            <Text>{data.type != (0 || 5 || 6 || 7 || 8) ? `コイン使用 (${history[data.type]})` : history[data.type]} </Text>
+          </Box>
+        </HStack>
+      </Box>
+      <Spacer />
+      <Text fontSize="lg" fontWeight="520" mt={5}>
+        {data.type != (0 || 5 || 6 || 7 || 8) ? '-' : '+'} {data.variation} C
+      </Text>
+    </Flex>
   );
 };
 

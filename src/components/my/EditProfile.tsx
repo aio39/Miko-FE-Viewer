@@ -67,17 +67,17 @@ const EditProfile = () => {
   const removeFileImage = () => {
     URL.revokeObjectURL(imageSrc);
     setImageSrc('');
-    setAvatar(null);
+    setAvatar(userData.avatar ?? null);
   };
 
   return (
     <Flex direction={{ base: 'column', md: 'row' }} justify={{ base: 'center', md: 'space-between' }} align={{ base: 'center', md: 'end' }} ml={{ base: 0, sm: '10' }} px={10}>
       <Stack spacing={4} w={'full'}>
-        <Heading mb={5} fontSize={{ base: '2xl', sm: '4xl' }}>
+        <Heading pb={4} fontSize={{ base: '2xl', sm: '4xl' }}>
           User Profile Edit
         </Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl id="avatar">
+          <FormControl id="avatar" py={4}>
             <FormLabel>Avatar</FormLabel>
             <Stack direction={['column', 'row']} spacing={6}>
               <Center>
@@ -99,7 +99,7 @@ const EditProfile = () => {
               </Center>
             </Stack>
           </FormControl>
-          <FormControl id="name" isInvalid={!!errors.name}>
+          <FormControl id="name" py={4} isInvalid={!!errors.name}>
             <FormLabel>Name</FormLabel>
             <Input
               value={name}
@@ -116,7 +116,7 @@ const EditProfile = () => {
             />
             <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
           </FormControl>
-          <FormControl id="email" isInvalid={!!errors.email}>
+          <FormControl id="email" py={4} isInvalid={!!errors.email}>
             <FormLabel>Email address</FormLabel>
             <Input
               value={email}
@@ -134,6 +134,7 @@ const EditProfile = () => {
             <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
           </FormControl>
           <Button
+            my={4}
             bg={'cyan.400'}
             color={'white'}
             w="full"

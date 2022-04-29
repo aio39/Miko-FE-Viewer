@@ -1,4 +1,4 @@
-import { Box, Button, Container, createIcon, Flex, Grid, GridItem, Heading, HStack, Icon, IconButton, Input, Radio, RadioGroup, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, createIcon, Flex, Grid, GridItem, Heading, HStack, Icon, IconButton, Input, Radio, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { FcLock } from '@react-icons/all-files/fc/FcLock';
 import { MdPublic } from '@react-icons/all-files/md/MdPublic';
 import { IMAGE_DOMAIN, USER_TICKET_COOKIE } from '@src/const';
@@ -140,7 +140,7 @@ const CurEnterInfo: FC = () => {
 
   const [transHover, setTransHover] = useState(false);
   return (
-    <Container maxW={'7xl'}>
+    <Box w="full" px={20}>
       <Stack align={'center'} spacing={{ base: 8, md: 10 }} py={{ base: 4, md: 6 }} direction={{ base: 'column', md: 'row' }}>
         <Stack flex={1} spacing={{ base: 5, md: 5 }}>
           <Box>
@@ -227,7 +227,7 @@ const CurEnterInfo: FC = () => {
         }
         `}
       </style>
-    </Container>
+    </Box>
   );
 };
 
