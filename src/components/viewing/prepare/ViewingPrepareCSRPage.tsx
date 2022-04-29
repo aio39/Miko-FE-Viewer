@@ -1,9 +1,9 @@
-import { Alert, AlertIcon, Box, BoxProps, Heading, HStack, Spinner, Tag, VStack } from '@chakra-ui/react';
+import { Box, BoxProps, Heading, HStack, Spinner, Tag, VStack } from '@chakra-ui/react';
 import { useBeforeunload } from '@src/hooks';
 import { useMyPeer, useSocket } from '@src/hooks/dynamicHooks';
 import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, prepareAnimationDurationState, socketErrorState } from '@src/state/recoil';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import LottieVideoPlay from '../../lottie/LottieVideoPlay';
 import ViewingCSRPage from '../ViewingCSRPage';
@@ -11,6 +11,7 @@ import PrepareIVS from './PrepareIVS';
 import PrepareMediaPipeSetup from './PrepareMediaPipeSetup';
 import PrepareMediaStream from './PrepareMediaStream';
 import PreparePeerConnectToServer from './PreparePeerConncet';
+import PrepareSocketConnectToServer from './PrepareSocketConnectToServer';
 
 const MotionBox = motion<Omit<BoxProps, 'transition'>>(Box);
 const MotionViewingCSRPage = motion(ViewingCSRPage);
@@ -90,27 +91,6 @@ const ViewingPrepareCSRPage = () => {
     };
   }, []);
 
-  useLayoutEffect(() => {
-    if (!socket) return;
-
-    let timeoutId: NodeJS.Timeout;
-    if (socket.connected) {
-      setIsReadySocket(true);
-    } else {
-      const checkSocketConnected = () => {
-        if (socket.connected) {
-          setIsReadySocket(true);
-        } else {
-          timeoutId = setTimeout(checkSocketConnected, 200);
-        }
-      };
-      timeoutId = setTimeout(checkSocketConnected);
-    }
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [socket]);
-
   //  TODO 종종 script 로딩 안됨
   return (
     <>
@@ -150,20 +130,11 @@ const ViewingPrepareCSRPage = () => {
                   <Tag colorScheme={isMediapipeSetup ? 'green' : 'red'}>motion</Tag>
                 </HStack>
                 <HStack>
-                  {[mediapipeError, socketError, peerError].map(errorText => {
-                    if (errorText)
-                      return (
-                        <Alert status="error">
-                          <AlertIcon />
-                          {errorText}
-                        </Alert>
-                      );
-                    return <></>;
-                  })}
                   <PrepareMediaStream setReady={setIsReadyStream} />
                   <PrepareMediaPipeSetup setReady={setIsReadyMediapipeSetup} />
                   <PrepareIVS setReady={setIsReadyIvs} />
                   <PreparePeerConnectToServer setReady={setIsReadyPeer} isExitedRef={isExitedRef} />
+                  <PrepareSocketConnectToServer setReady={setIsReadySocket} />
                 </HStack>
               </Box>
             </VStack>
