@@ -4,9 +4,9 @@ import { ivsErrorState, mediapipeErrorState, myStreamState, peerErrorState, sock
 import { FC, MutableRefObject, useEffect } from 'react';
 import { useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 
-const CleanUp: FC<{ isExitedRef: MutableRefObject<boolean> }> = ({ isExitedRef }) => {
+const CleanUp: FC<{ isExitedRef: MutableRefObject<boolean>; peerId?: string }> = ({ isExitedRef, peerId }) => {
   const socket = useSocket();
-  const myPeer = useMyPeer();
+  const myPeer = useMyPeer(peerId);
   const setMediapipeError = useSetRecoilState(mediapipeErrorState);
   const setSocketError = useSetRecoilState(socketErrorState);
   const setPeerError = useSetRecoilState(peerErrorState);

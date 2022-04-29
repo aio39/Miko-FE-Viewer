@@ -12,7 +12,6 @@ import { CommonFSW, Pagination } from '@src/types/share/common';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { stringify } from 'querystring';
 import { FC, KeyboardEventHandler, ReactElement, useEffect, useState } from 'react';
 
 const PER_PAGE = 12;
@@ -63,6 +62,7 @@ export const getServerSideProps: GetServerSideProps<Data> = async context => {
   const categoryId = parseInt(context.query.category_id as string, 10);
   const page = parseInt(context.query.page as string, 10);
   const search = context.query.search as string;
+  // context.res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate'=59);
 
   const concerts = await getPageLaravelData('/concerts', {
     filter: categoryId ? [['category_id', categoryId]] : [],

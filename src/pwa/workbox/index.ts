@@ -1,5 +1,7 @@
 import { util } from './util';
 
+// 일부 라이프 사이클은  cache.js 에서 담당
+
 declare let self: ServiceWorkerGlobalScope;
 
 // To disable all workbox logging during development, you can set self.__WB_DISABLE_DEV_LOGS to true

@@ -5,9 +5,13 @@ import { Dispatch, FC, MutableRefObject, SetStateAction, useEffect, useLayoutEff
 import { useRecoilState } from 'recoil';
 import PrepareErrorAlert from './PrepareErrorAlert';
 
-const PreparePeerConnectToServer: FC<{ setReady: Dispatch<SetStateAction<boolean>>; isExitedRef: MutableRefObject<boolean> }> = ({ setReady, isExitedRef }) => {
+const PreparePeerConnectToServer: FC<{ setReady: Dispatch<SetStateAction<boolean>>; isExitedRef: MutableRefObject<boolean>; peerId?: string }> = ({
+  setReady,
+  isExitedRef,
+  peerId,
+}) => {
   const [peerError, setPeerError] = useRecoilState(peerErrorState);
-  const myPeer = useMyPeer();
+  const myPeer = useMyPeer(peerId);
   const [fireRerender, setFireRerender] = useState(0);
 
   const handleFireRerender = () => {

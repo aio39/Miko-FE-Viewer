@@ -1,5 +1,6 @@
 import { Center, Text } from '@chakra-ui/react';
 import { Container } from '@src/components/Container';
+import { toastLog } from '@src/helper';
 import ViewingLayout from '@src/layout/ViewingLayout';
 import { curUserTicketState } from '@src/state/recoil';
 import dayjs from 'dayjs';
@@ -66,7 +67,8 @@ export default function ViewingPage(): InferGetServerSidePropsType<typeof getSer
     const diffTime = dayjs().diff(userTicket.ticket.concertEndDate);
     const endTimeMs = diffTime ? -1 * diffTime : 0;
     const setTimeoutId = setTimeout(() => {
-      router.push(`/live/${userTicket.ticketId}/result/${userTicket.userId}`);
+      toastLog('info', '콘서트가 종료되어 결과 페이지로 이동합니다.');
+      // router.push(`/live/${userTicket.ticketId}/result/${userTicket.userId}`);
     }, endTimeMs);
 
     return () => {

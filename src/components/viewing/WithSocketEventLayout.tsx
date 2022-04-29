@@ -8,7 +8,7 @@ import { DataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
 import produce from 'immer';
 import { useRouter } from 'next/router';
 import { DataConnection, MediaConnection } from 'peerjs';
-import { FC, ReactElement, useCallback, useEffect } from 'react';
+import { FC, ReactElement, useCallback, useEffect, useRef } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 type PeerFatalErrorType = 'browser-incompatible' | 'invalid-id' | 'invalid-key' | 'ssl-unavailable' | 'server-error' | 'socket-error' | 'socket-closed';
@@ -20,6 +20,8 @@ type PeerErrorType = PeerFatalErrorType | PeerNotFatalType;
 const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => {
   const socket = useSocket();
   const myPeer = useMyPeer();
+
+  const syncDataConnectionRef = useRef<DataConnection>();
 
   const { data: userData } = useUser();
   const myPeerUniqueID = userData?.uuid;
@@ -98,6 +100,10 @@ const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => 
       }
     });
 
+    const addEventToSyncDataConnection = (dataConnection: DataConnection) => {
+      dataConnection.on('data', (event: DataConnectionEvent) => {});
+    };
+
     const addEventToDataConnection = (dataConnection: DataConnection) => {
       const id = dataConnection.peer;
       dataConnection.on('data', (event: DataConnectionEvent) => {
@@ -144,8 +150,13 @@ const WithSocketEventLayout: FC<{ children: ReactElement }> = ({ children }) => 
     };
 
     const peerOnDataConnection = (dataConnection: DataConnection): void => {
-      addDataConnectionToPeersDataList(dataConnection);
-      addEventToDataConnection(dataConnection);
+      if (dataConnection.metadata?.type === 'sync') {
+        syncDataConnectionRef.current = dataConnection;
+        addEventToSyncDataConnection(dataConnection);
+      } else {
+        addDataConnectionToPeersDataList(dataConnection);
+        addEventToDataConnection(dataConnection);
+      }
     };
     myPeer.on('connection', peerOnDataConnection);
 

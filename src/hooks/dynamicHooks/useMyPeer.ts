@@ -4,12 +4,12 @@ import { useRef } from 'react';
 
 type ExtendPeer = InstanceType<typeof Peer> & { open: boolean };
 
-export const useMyPeer = () => {
+export const useMyPeer = (customId?: string) => {
   const { data } = useUser();
 
   const myPeer = useRef<ExtendPeer>(
     (window.myPeer as ExtendPeer) ??
-      (new Peer(data.uuid, {
+      (new Peer(customId || data!.uuid, {
         debug: 0,
         host: process.env.NEXT_PUBLIC_PEER_HOST ?? '0.peerjs.com', // default 0.peerjs.com
         port: process.env.NEXT_PUBLIC_PEER_PORT ? parseInt(process.env.NEXT_PUBLIC_PEER_PORT, 10) : 443, // default 443
