@@ -114,8 +114,11 @@ const MyListPage = () => {
 };
 
 MyListPage.getLayout = function getLayout(page: ReactElement) {
-  return <BasicLayout>{page}</BasicLayout>;
+  return (
+    <BasicLayout>
+      <AsyncBoundary>{page}</AsyncBoundary>
+    </BasicLayout>
+  );
 };
 
-// export default MyListPage;
 export default MyListPage;
