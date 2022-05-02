@@ -33,11 +33,12 @@ const avatarStatusTextMotion: Variants = {
   },
 };
 
-const StatusItem: FC<{ status: boolean | undefined; name: string }> = ({ status, name }) => {
+// NOTE 그냥 boolean 값으로 전해주면 랜더링이 되지 않음.
+const StatusItem: FC<{ status: () => boolean | undefined; name: string }> = ({ status, name }) => {
   return (
-    <MotionBox variants={avatarStatusMotion} overflow="clip" backgroundColor={status ? 'teal.300' : 'red.500'} display="flex" justifyContent="center" alignItems="center">
+    <MotionBox variants={avatarStatusMotion} overflow="clip" backgroundColor={status() ? 'teal.300' : 'red.500'} display="flex" justifyContent="center" alignItems="center">
       <MotionBox variants={avatarStatusTextMotion}>
-        {name} {status ? '👌' : '❌'}
+        {name} {status() ? '👌' : '❌'}
       </MotionBox>
     </MotionBox>
   );

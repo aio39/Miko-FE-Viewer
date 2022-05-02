@@ -4,10 +4,10 @@ import useFireRenderInterval from '@src/hooks/useFireRenderInterval';
 import { memo } from 'react';
 
 type Props = {
-  children: React.ReactNode[];
+  children: React.ReactNode[] | React.ReactNode;
 };
 
-const CONNECTION_CHECK_INTERVAL = 5000;
+const CONNECTION_CHECK_INTERVAL = 2500;
 
 export const AvatarConnectionStatus = memo<Props>(({ children }) => {
   const fireRerender = useFireRenderInterval(CONNECTION_CHECK_INTERVAL);

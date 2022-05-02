@@ -5,10 +5,12 @@ import { BiVolumeMute } from '@react-icons/all-files/bi/BiVolumeMute';
 import { FiMoreHorizontal } from '@react-icons/all-files/fi/FiMoreHorizontal';
 import { AvatarModel } from '@src/components/viewing/avatar/AvatarModel';
 import { NEXT_URL } from '@src/const';
-import { isOnAvatarState } from '@src/state/recoil';
+import { isOnAvatarState, mySyncDataConnectionState } from '@src/state/recoil';
 import { useUser } from '@src/state/swr';
 import { memo } from 'react';
 import { useRecoilValue } from 'recoil';
+import { AvatarConnectionStatus } from './AvatarConnectionStatus';
+import StatusItem from './AvatarConnectionStatus/StatusItem';
 import { AvatarEnterEffect } from './AvatarEnterEffect';
 import { AvatarMenu } from './AvatarMenu';
 import { AvatarScore } from './AvatarScore';
@@ -21,14 +23,15 @@ export const My3DAvatar = memo(() => {
     data: { uuid },
   } = useUser();
   const isOnAvatar = useRecoilValue(isOnAvatarState);
-
+  const mySyncDataConnection = useRecoilValue(mySyncDataConnectionState);
+  console.info('abcd', mySyncDataConnection);
   return (
     <AvatarEnterEffect key="me" layoutId="meAvatar">
       <Box
         position="relative"
         width={AVATAR_SIZE}
         height={AVATAR_SIZE}
-        backgroundImage={!isOnAvatar && "url('/image/temp/avatar.png')"}
+        backgroundImage={!isOnAvatar ? "url('/image/temp/avatar.png')" : ''}
         backgroundRepeat="no-repeat"
         backgroundSize="cover"
       >
@@ -50,6 +53,9 @@ export const My3DAvatar = memo(() => {
             />
           </Box>
         )}
+        <AvatarConnectionStatus>
+          <StatusItem name="Sync" status={() => mySyncDataConnection?.open} />
+        </AvatarConnectionStatus>
         <AvatarScore uuid={uuid} />
         <Box width="full" position="absolute" top="0" h="2rem" color="white" pointerEvents="none">
           <RoomChatBox peerId={uuid} />

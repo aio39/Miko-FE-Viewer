@@ -90,8 +90,8 @@ export const Peer3DAvatar = memo<Props>(({ peer }) => {
           {data.name}
         </Heading>
         <AvatarConnectionStatus>
-          <StatusItem name="Data" status={dataConnection?.open} />
-          <StatusItem name="Media" status={mediaStream?.active} />
+          <StatusItem name="Data" status={() => dataConnection?.open} />
+          <StatusItem name="Media" status={() => mediaStream?.active} />
         </AvatarConnectionStatus>
         <AvatarScore uuid={uuid} />
       </Box>
