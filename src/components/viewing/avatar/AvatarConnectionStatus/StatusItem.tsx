@@ -1,4 +1,5 @@
 import { MotionBox } from '@src/components/common/motion/MotionChakra';
+import useFireRenderInterval from '@src/hooks/useFireRenderInterval';
 import { Variants } from 'framer-motion';
 import { FC } from 'react';
 
@@ -33,10 +34,20 @@ const avatarStatusTextMotion: Variants = {
   },
 };
 
-// NOTE 그냥 boolean 값으로 전해주면 랜더링이 되지 않음.
+// NOTE Child 재랜더링 되는 경우 잘 생각
 const StatusItem: FC<{ status: () => boolean | undefined; name: string }> = ({ status, name }) => {
+  const fireRerender = useFireRenderInterval(2500);
+
   return (
-    <MotionBox variants={avatarStatusMotion} overflow="clip" backgroundColor={status() ? 'teal.300' : 'red.500'} display="flex" justifyContent="center" alignItems="center">
+    <MotionBox
+      variants={avatarStatusMotion}
+      overflow="clip"
+      backgroundColor={status() ? 'teal.300' : 'red.500'}
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      onMouseEnter={fireRerender}
+    >
       <MotionBox variants={avatarStatusTextMotion}>
         {name} {status() ? '👌' : '❌'}
       </MotionBox>
