@@ -1,10 +1,10 @@
 import { Button } from '@chakra-ui/react';
 import { chatModeState } from '@src/state/recoil';
-import { FC } from 'react';
+import { ComponentProps, FC } from 'react';
 import { useRecoilState } from 'recoil';
 import chatModeCompute from './computeChatMode';
 
-const ChatModeBtn: FC<{ amount: number }> = ({ amount }) => {
+const ChatModeBtn: FC<{ amount: number; buttonProps?: ComponentProps<typeof Button> }> = ({ amount, buttonProps }) => {
   const [chatMode, setChatMode] = useRecoilState(chatModeState);
 
   return (
@@ -17,6 +17,7 @@ const ChatModeBtn: FC<{ amount: number }> = ({ amount }) => {
           return 'private';
         })
       }
+      {...buttonProps}
     >
       {chatModeCompute(amount, chatMode) === 'public' ? '全体へ' : 'ルームへ'}
     </Button>

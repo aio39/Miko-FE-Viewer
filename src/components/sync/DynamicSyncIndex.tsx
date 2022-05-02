@@ -1,8 +1,6 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Flex, Tag } from '@chakra-ui/react';
 import { useMyPeer } from '@src/hooks/dynamicHooks';
 import { useUser } from '@src/state/swr';
-import { ChatMessageInterface } from '@src/types/dto/ChatMessageType';
-import { DataConnectionEvent } from '@src/types/dto/DataConnectionEventType';
 import Peer from 'peerjs';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { QrReader } from 'react-qr-reader';
@@ -14,42 +12,39 @@ import SyncMotion from './motion/SyncMotion';
 const ConnectToMyPeer: FC<{ myAccountPeerId: string }> = ({ myAccountPeerId }) => {
   const myPeer = useMyPeer();
   const [myDataConnection, setMyDataConnection] = useState<Peer.DataConnection>();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const dataConnection = myPeer.connect(myAccountPeerId, { metadata: { type: 'sync' } });
     setMyDataConnection(dataConnection);
-    dataConnection.on('data', (event: DataConnectionEvent) => {
-      switch (event.type) {
-        case 'done':
-          break;
-        default:
-          break;
-      }
-    });
+    // dataConnection.on('data', (event: DataConnectionEvent) => {
+    //   switch (event.type) {
+    //     case 'done':
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // });
     dataConnection.on('open', () => {
       console.info('open!!!');
+      setIsOpen(true);
     });
 
     return () => {};
   }, []);
 
-  const sendDataTest = () => {
-    myDataConnection?.send({ type: 'test', data: 'aaaaa' });
-  };
-
-  const sendChat = useCallback(
-    (data: ChatMessageInterface) => {
-      myDataConnection?.send({ type: 'chat', data });
+  const sendDataToMe = useCallback(
+    (data: Object) => {
+      myDataConnection?.send(data);
     },
     [myDataConnection],
   );
 
   return (
-    <Box>
-      ConnectToMyPeer <SyncMotion />
-      {myDataConnection ? 'connect' : 'no'}
-      <ChatInput sendChat={sendChat} />
-      <Button onClick={sendDataTest}>Click</Button>
+    <Box width="full">
+      <SyncMotion />
+      <Tag colorScheme={isOpen ? 'green' : 'red'}>Sync</Tag>
+      <ChatInput sendData={sendDataToMe} />
     </Box>
   );
 };

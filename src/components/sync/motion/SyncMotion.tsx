@@ -1,4 +1,4 @@
-import { Box, Tag, Text } from '@chakra-ui/react';
+import { Center, Tag, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 const SyncMotion = () => {
@@ -40,12 +40,12 @@ const SyncMotion = () => {
   }, []);
 
   return (
-    <Box>
+    <Center>
       <Tag colorScheme={error ? 'green' : 'red'}>Sensor</Tag>
-      <Text> x - {xyz[0]} </Text>
-      <Text> y - {xyz[1]} </Text>
+      <Text> x - {xyz[0]} / </Text>
+      <Text> y - {xyz[1]} / </Text>
       <Text> z - {xyz[2]} </Text>
-    </Box>
+    </Center>
   );
 };
 
