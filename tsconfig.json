@@ -21,7 +21,7 @@
     },
     "typeRoots": ["./src/types"],
     "incremental": true,
-    "types": ["offscreencanvas", "workbox-window"]
+    "types": ["offscreencanvas", "workbox-window", "w3c-generic-sensor"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

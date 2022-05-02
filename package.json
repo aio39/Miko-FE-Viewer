@@ -32,6 +32,7 @@
     "@types/nprogress": "^0.2.0",
     "@types/offscreencanvas": "^2019.6.4",
     "@types/react-virtualized": "^9.21.21",
+    "@types/w3c-generic-sensor": "^1.0.5",
     "@types/workbox-window": "^4.3.4",
     "@videojs/themes": "^1.0.1",
     "amazon-ivs-player": "^1.8.0",
