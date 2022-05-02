@@ -10,6 +10,7 @@ import { PeerDataInterface } from '@src/types/local/PeerData';
 import { createRef, memo, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { AvatarConnectionStatus } from './AvatarConnectionStatus';
+import StatusItem from './AvatarConnectionStatus/StatusItem';
 import { AvatarEnterEffect } from './AvatarEnterEffect';
 import { AvatarMenu } from './AvatarMenu';
 import { AvatarScore } from './AvatarScore';
@@ -88,8 +89,10 @@ export const Peer3DAvatar = memo<Props>(({ peer }) => {
         <Heading position="absolute" top="2" left="1" fontSize="1.2rem">
           {data.name}
         </Heading>
-        <AvatarConnectionStatus dataConnection={dataConnection} mediaStream={mediaStream} />
-
+        <AvatarConnectionStatus>
+          <StatusItem name="Data" status={dataConnection?.open} />
+          <StatusItem name="Media" status={mediaStream?.active} />
+        </AvatarConnectionStatus>
         <AvatarScore uuid={uuid} />
       </Box>
     </AvatarEnterEffect>
