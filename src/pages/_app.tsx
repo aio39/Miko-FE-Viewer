@@ -123,6 +123,11 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     };
   }, []);
 
+  useEffect(() => {
+    const isChrome = navigator.userAgent.includes('Chrome') && navigator.vendor.includes('Google Inc');
+    if (!isChrome) alert('Chrome browser is recommended for best experience.');
+  }, []);
+
   const getLayout = Component?.getLayout || (page => page);
   //  NOTE getLayout을 recoilRoot보다 밖에 두면 Layout이 동일하지 않는 이상 초기화됨.
   return (
